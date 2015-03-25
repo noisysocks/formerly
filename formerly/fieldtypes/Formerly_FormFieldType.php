@@ -12,7 +12,9 @@ class Formerly_FormFieldType extends BaseFieldType
 	{
 		$forms = craft()->formerly_forms->getAllForms();
 
-		$options = array();
+		$options = array(
+			0 => '-- Select a form --'
+		);
 
 		foreach ($forms as $form)
 		{
