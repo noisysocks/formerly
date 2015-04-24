@@ -33,7 +33,27 @@ class Formerly_ExportController extends BaseController
 				$columnName = str_replace($form->handle . '_', '', $question->handle);
 				$columnName = ucwords($columnName);
 
-				$row[$columnName] = $submission->{$question->handle};
+				$value = $submission->{$question->handle};
+
+				if($value instanceof MultiOptionsFieldData)
+				{
+					$options = $value->getOptions();
+
+					$summary = array();
+
+					for ($j = 0; $j < count($options); ++$j)
+					{
+						$option = $options[$j];
+						if($option->selected)
+							$summary[] = $option->label;
+					}
+					$row[$columnName] = implode($summary, ', ');
+				}
+				else
+				{
+					$row[$columnName] = $value;
+				}
+
 			}
 
 			$data[] = $row;
