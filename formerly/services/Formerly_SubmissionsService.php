@@ -102,13 +102,15 @@ class Formerly_SubmissionsService extends BaseApplicationComponent
 				if (empty($emailDef['to'])) continue;
 
 				$email = new EmailModel();
-				$email->toEmail = $this->_renderSubmissionTemplate($emailDef['to'], $submission);
+				$recipient = $this->_renderSubmissionTemplate($emailDef['to'], $submission);
+				if(empty($recipient)) continue;
+				$email->toEmail = $recipient
 				$email->subject = !empty($emailDef['subject']) ? $this->_renderSubmissionTemplate($emailDef['subject'], $submission) : 'Website Enquiry';
 
 				if (!empty($emailDef['from']))
 				{
 					$from = $this->_renderSubmissionTemplate($emailDef['from'], $submission);
-
+					if(empty($from)) continue;
 					// https://regex101.com/r/yI0hL1/1
 					preg_match('/^(.+)\<(.+)\>$/', $from, $matches);
 
