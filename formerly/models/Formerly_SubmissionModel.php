@@ -5,6 +5,11 @@ class Formerly_SubmissionModel extends BaseElementModel
 {
 	protected $elementType = 'Formerly_Submission';
 
+	/**
+	 * @var Formerly_FormModel
+	 */
+	protected $formModel;
+
 	protected function defineAttributes()
 	{
 		return array_merge(parent::defineAttributes(), array(
@@ -37,12 +42,17 @@ class Formerly_SubmissionModel extends BaseElementModel
 		}
 	}
 
+	/**
+	 * @return Formerly_FormModel
+	 */
 	public function getForm()
 	{
-		if ($this->formId)
+		if (!$this->formModel && $this->formId)
 		{
-			return craft()->formerly_forms->getFormById($this->formId);
+			$this->formModel = craft()->formerly_forms->getFormById($this->formId);
 		}
+
+		return $this->formModel;
 	}
 
 	public function downloadLink($handle) {
