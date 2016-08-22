@@ -24,7 +24,7 @@ class Formerly_ExportController extends BaseController
 		$form = craft()->formerly_forms->getFormById($formId);
 
 		set_time_limit('1000');
-		//ini_set('memory_limit', '1024M');
+
 		header('Content-Type: application/octet-stream');
 		header('Content-Disposition: attachment; filename="' . ($form->handle . '_submissions.csv'));
 		header('Content-Transfer-Encoding: binary');
@@ -64,9 +64,9 @@ class Formerly_ExportController extends BaseController
 
 			$criteria->order = 'dateCreated desc';
 
-			// Write column names first.
 
-        $first = true;
+
+		 $first = true;
 
 		foreach ($criteria->find() as $submission) {
 			$dataToProcess = true;
