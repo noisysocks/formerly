@@ -33,6 +33,8 @@ class Formerly_SubmissionsService extends BaseApplicationComponent
 			$submission = craft()->elements->getElementById($submission->id, 'Formerly_Submission');
 
 			$this->sendSubmissionEmails($submission);
+			
+			$success = true;
 
 			// Send mailchimp submission
 			$form = craft()->formerly_forms->getFormById($submission->formId);
@@ -54,7 +56,6 @@ class Formerly_SubmissionsService extends BaseApplicationComponent
                 $api = new \MCAPI($apiKey);
                 $api->listSubscribe($list, $vars['EMAIL'], $vars, 'html', false);
 
-                $success = true;
                 if ($api->errorCode) {
                     $success = false;
                 }
