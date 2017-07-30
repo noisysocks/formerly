@@ -17,7 +17,7 @@
           {% for value in row %}
             <td>
               {% if loop.first  %}
-                <a href="/admin/formerly/offerClaims/{{ value }}">
+                <a href="/admin/formerly/{{ handle }}/{{ value }}">
                   #{{ value }}
                 </a>
               {% else %}

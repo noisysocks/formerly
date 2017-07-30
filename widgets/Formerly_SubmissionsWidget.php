@@ -73,6 +73,7 @@ class Formerly_SubmissionsWidget extends BaseWidget
 
     $variables = array();
     $variables['name'] = $form->name;
+    $variables['handle'] = $form->handle;
     $variables['id'] = $form->id;
     $variables['bars'] = $bars;
     $variables['groupby'] = $this->getSettings()->groupby;
