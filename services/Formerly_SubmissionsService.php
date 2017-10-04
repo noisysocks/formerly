@@ -194,57 +194,63 @@ class Formerly_SubmissionsService extends BaseApplicationComponent
 			{
 				if (empty($emailDef['to'])) continue;
 
-				$email = new EmailModel();
-				$email->toEmail = $this->_renderSubmissionTemplate($emailDef['to'], $submission);
-				$email->subject = !empty($emailDef['subject']) ? $this->_renderSubmissionTemplate($emailDef['subject'], $submission) : 'Website Enquiry';
+                $toEmails = preg_split("/[\s,;]+/", $this->_renderSubmissionTemplate($emailDef['to'], $submission));
 
-				if (!empty($emailDef['from']))
-				{
-					$from = $this->_renderSubmissionTemplate($emailDef['from'], $submission);
+                foreach ($toEmails as $toEmail)
+                {
 
-					// https://regex101.com/r/yI0hL1/1
-					preg_match('/^(.+)\<(.+)\>$/', $from, $matches);
+                    $email = new EmailModel();
+                    $email->toEmail = $toEmail;
+                    $email->subject = !empty($emailDef['subject']) ? $this->_renderSubmissionTemplate($emailDef['subject'], $submission) : 'Website Enquiry';
 
-					if (count($matches) >= 3)
-					{
-						// The provided from email is in the format Name <email>.
-						$email->fromName  = trim($matches[1]);
-						$email->fromEmail = trim($matches[2]);
-					}
-					else
-					{
-						// Note: If no from email is set, the default is the craft admin email address.
-						$email->fromEmail = $from;
-					}
-				}
+                    if (!empty($emailDef['from']))
+                    {
+                        $from = $this->_renderSubmissionTemplate($emailDef['from'], $submission);
 
-				if (!empty($emailDef['body']))
-				{
-					$email->body     = $this->_renderSubmissionTemplate($emailDef['body'], $submission);
-					$email->htmlBody = $email->body;
-				}
-				else
-				{
-					$email->body     = $submission->getSummary();
-					$email->htmlBody = $email->body;
-				}
+                        // https://regex101.com/r/yI0hL1/1
+                        preg_match('/^(.+)\<(.+)\>$/', $from, $matches);
 
-				if (!empty($email->body) && $sendEmail)
-				{
-					craft()->email->sendEmail($email);
-				}
+                        if (count($matches) >= 3)
+                        {
+                            // The provided from email is in the format Name <email>.
+                            $email->fromName = trim($matches[1]);
+                            $email->fromEmail = trim($matches[2]);
+                        }
+                        else
+                        {
+                            // Note: If no from email is set, the default is the craft admin email address.
+                            $email->fromEmail = $from;
+                        }
+                    }
 
-				if (strlen($writeEmailToFilePath) > 0) {
-						$file = $writeEmailToFilePath . '/form-' . $form->id . '-submission-' . $submission->id . '.json';
-						$jsonEmail = new \StdClass();
-						$jsonEmail->toEmail = $email->toEmail;
-						$jsonEmail->fromName = $email->fromName;
-						$jsonEmail->fromEmail = $email->fromEmail;
-						$jsonEmail->subject = $email->subject;
-						$jsonEmail->body = $email->body;
+                    if (!empty($emailDef['body']))
+                    {
+                        $email->body = $this->_renderSubmissionTemplate($emailDef['body'], $submission);
+                        $email->htmlBody = $email->body;
+                    }
+                    else
+                    {
+                        $email->body = $submission->getSummary();
+                        $email->htmlBody = $email->body;
+                    }
 
-						file_put_contents($file, json_encode($jsonEmail));
-				}
+                    if (!empty($email->body) && $sendEmail)
+                    {
+                        craft()->email->sendEmail($email);
+                    }
+
+                    if (strlen($writeEmailToFilePath) > 0) {
+                        $file = $writeEmailToFilePath . '/form-' . $form->id . '-submission-' . $submission->id . '.json';
+                        $jsonEmail = new \StdClass();
+                        $jsonEmail->toEmail = $email->toEmail;
+                        $jsonEmail->fromName = $email->fromName;
+                        $jsonEmail->fromEmail = $email->fromEmail;
+                        $jsonEmail->subject = $email->subject;
+                        $jsonEmail->body = $email->body;
+
+                        file_put_contents($file, json_encode($jsonEmail));
+                    }
+                }
 			}
 		}
 	}
